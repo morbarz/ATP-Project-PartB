@@ -17,5 +17,6 @@ public class MyCompressorOutputStream extends OutputStream {
     @Override
     public void write(byte[] b) throws IOException {
         super.write(b);
+        return b;
     }
 }
