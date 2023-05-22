@@ -6,99 +6,114 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class MyDecompressorInputStream extends InputStream {
-    private InputStream in;
+    public InputStream in;
+    public byte[] readBytes;
 
-
-    public MyDecompressorInputStream(InputStream in) {
-        this.in = in;
-    }
-
-
-    public byte[] decompress(byte[] compressedData) throws IOException {
-        // Extract start/end/size of maze from compressed data
-        byte[] originalData = new byte[12];
-        for (int i = 0; i < 12; i++) {
-            originalData[i] = compressedData[i];
-        }
-
-        int uncompressedSize = (compressedData.length - 12) * 8;
-        byte[] decompressedData = new byte[uncompressedSize + 12];
-        for (int i = 0; i < 12; i++) {
-            decompressedData[i] = originalData[i];
-        }
-
-        int index = 12;
-        int count = 0;
-        char[] binary = new char[8];
-        for (int i = 12; i < compressedData.length; i++) {
-            int val = compressedData[i] & 0xFF;
-            if (val < 255) {  // Check if the value is less than 255 (uncompressed)
-                String binaryString = Integer.toBinaryString(val);
-                int leadingZeros = 8 - binaryString.length();
-                for (int j = 0; j < leadingZeros; j++) {
-                    binary[count++] = '0';
-                }
-                for (int j = 0; j < binaryString.length(); j++) {
-                    binary[count++] = binaryString.charAt(j);
-                }
-            } else { // Compressed value
-                while (i < compressedData.length && val == 255) {
-                    i++;
-                    val = compressedData[i] & 0xFF;
-                }
-                i--;
-                binary = IntToBinary(val); // Convert compressed value to binary
-                count = 0;
-            }
-
-            if (count == 8) {
-                byte[] byteArr = BinaryToByteArray(binary);
-                for (byte b : byteArr) {
-                    decompressedData[index++] = b;
-                }
-                count = 0;
-            }
-        }
-
-        return decompressedData;
-    }
-
-    // Convert binary to byte array
-    public byte[] BinaryToByteArray(char[] binary) {
-        byte[] byteArr = new byte[binary.length / 8];
-        for (int i = 0; i < binary.length; i += 8) {
-            String binaryString = new String(binary, i, 8);
-            int val = Integer.parseInt(binaryString, 2);
-            byteArr[i / 8] = (byte) val;
-        }
-        return byteArr;
-    }
-
-    // Convert int to binary
-    public char[] IntToBinary(int val) {
-        char[] binary = new char[8];
-        for (int i = 7; i >= 0; i--) {
-            binary[i] = (char) ('0' + (val & 1));
-            val >>= 1;
-        }
-        return binary;
+    public MyDecompressorInputStream(InputStream inputStream)
+    {
+        this.in = inputStream;
     }
 
     @Override
     public int read() throws IOException {
+
         return 0;
     }
 
-    public int read(byte[] b) throws IOException {
-        // Read from the underlying input stream and fill the byte array 'b' with decompressed data.
-        // Return the number of bytes read.
+    public int read(byte[] bytes) throws IOException {
+        decompress(bytes);
+        return 0;
 
-        int bytesRead = in.read(b, 0, b.length);
-
-        if (bytesRead > 0) {
-            decompress(b); // Decompress the data read from the input stream
+    }
+    // converts from int into a list of ints(binary values) 100 -> [1,1,0,0,1,0,0]
+    public byte[] decompress(byte[] bytes ) throws IOException {
+        readBytes = new byte[bytes.length];
+        readBytes = in.readAllBytes();
+        int count = 12;
+        // converting the start/end/size of the maze.
+        for (int i = 0; i < 12; i++)
+        {
+            bytes[i] = readBytes[i];
         }
 
-        return bytesRead;
+        // convert all bytes into 8's of binary numbers.
+
+        for (int i = 12; i < readBytes.length; i+=2)
+        {
+            if (i == readBytes.length - 2)
+            {
+                int fixed_size = ((bytes.length - 12) % 8);
+                byte[] temp = new byte[2];
+                temp[0] = readBytes[i];
+                temp[1] = readBytes[i + 1];
+                int val = BytesTooInt(temp);
+                int[] bin = IntToBinary(val);
+                if (fixed_size != 0)
+                {
+                    for (int j = 0; j < fixed_size; j++)
+                    {
+                        bytes[count++] = (byte) bin[j];
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < 8; j++) {
+                        bytes[count++] = (byte) bin[j];
+                    }
+                }
+                continue;
+            }
+            if (i == readBytes.length - 1)
+            {
+                byte[] temp = new byte[2];
+                temp[1] = readBytes[readBytes.length - 1];
+                int val = BytesTooInt(temp);
+                int[] bin = IntToBinary(val);
+                for (int j = 0; j < 8; j++)
+                {
+                    if (count == bytes.length - 1)
+                        break;
+                    bytes[count++] = (byte)bin[j];
+                }
+                break;
+            }
+            byte[] temp = new byte[2];
+            temp[0] = readBytes[i];
+            temp[1] = readBytes[i + 1];
+            int val = BytesTooInt(temp);
+            int[] bin = IntToBinary(val);
+            for (int j = 0; j < 8; j++)
+            {
+                if (count == bytes.length - 1)
+                    break;
+                bytes[count++] = (byte)bin[j];
+            }
+        }
+        /// TODO convert all bytes into 1's & 0's.
+        return bytes;
+
     }
+
+        public int[] IntToBinary(int val)
+    {
+        String str = Integer.toBinaryString(val);
+        int[] arr = new int[8];
+        int index = 8 - str.length();
+        char[] cArr = str.toCharArray();
+        for (int i = 0; i < cArr.length; i++)
+        {
+            int x = Character.getNumericValue(cArr[i]);
+            arr[index++] = x;
+        }
+        return arr;
+    }
+
+    //converts bytes into int.
+    public int BytesTooInt(byte[] bytes)
+    {
+        int v = new BigInteger(bytes).intValue();
+        return v;
+    }
+
 }
+
