@@ -19,8 +19,11 @@ public class MyCompressorOutputStream extends OutputStream
 
     public void write(int b) throws IOException
     {}
-    public void write(byte[] b) throws IOException
-    {
+    public void write(byte[] b) throws IOException {
+        out.write(compress(b));
+    }
+    public byte[] compress(byte[] b ) throws IOException {
+
         // inserting start/end/size of maze and initialize byte array.
         if ((b.length-12) % 8 == 0)
             ByteArray = new byte[(int)Math.ceil((double)(b.length-12)/4) + 12];
@@ -66,12 +69,13 @@ public class MyCompressorOutputStream extends OutputStream
                 size++;
             }
         }
-        out.write(ByteArray);
+        return ByteArray;
         ///TODO gets a byte array need to check each byte if comes in blocks and count it.
     }
 
-    // convert binary into int.
-    public int BinaryToInt(char[] bin) /// [0,0,0,0,1,0,0,1,0,0,0,1,1,1,1,0] = 2334
+        // convert binary into int.
+
+    public int BinaryToInt(char[] bin)
     {
         int level = 0;
         int result = 0;
