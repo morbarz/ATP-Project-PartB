@@ -7,6 +7,6 @@ import java.net.ServerSocket;
 
 public interface IServerStrategy {
     //ServerSocket serverSocket = new ServerSocket(port);
-    void applyStrategy(InputStream inFromClient, OutputStream outToClient) throws IOException;
+    void applyStrategy(InputStream inFromClient, OutputStream outToClient) throws IOException, ClassNotFoundException;
 
 }
