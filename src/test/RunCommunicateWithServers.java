@@ -1,15 +1,23 @@
 package test;
-
+import Client.IClientStrategy;
+import Server.Server ;
 import Server.ServerStrategyGenerateMaze;
 import Server.ServerStrategySolveSearchProblem;
+import algorithms.mazeGenerators.Maze;
+import algorithms.mazeGenerators.MyMazeGenerator;
+import algorithms.search.AState;
+import algorithms.search.Solution;
+
+import java.io.*;
+import java.net.InetAddress;
+import java.util.ArrayList;
 
 public class RunCommunicateWithServers {
     public static void main(String[] args) {
 //Initializing servers
         Server mazeGeneratingServer = new Server(5400, 1000, new ServerStrategyGenerateMaze());
         Server solveSearchProblemServer = new Server(5401, 1000, new ServerStrategySolveSearchProblem());
-//Server stringReverserServer = new Server(5402, 1000, new
-        ServerStrategyStringReverser());
+//Server stringReverserServer = new Server(5402, 1000, new ServerStrategyStringReverser());
 //Starting servers
         solveSearchProblemServer.start();
         mazeGeneratingServer.start();
