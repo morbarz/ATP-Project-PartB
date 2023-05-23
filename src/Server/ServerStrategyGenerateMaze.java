@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class ServerStrategyGenerateMaze implements IServerStrategy {
-    public void applyStrategy(InputStream inFromClient, OutputStream outToClient) throws IOException, ClassNotFoundException {
+    public void applyStrategy(InputStream inFromClient, OutputStream outToClient) throws IOException{
         try {
             ObjectInputStream fromClient = new ObjectInputStream(inFromClient);
             ObjectOutputStream toClient = new ObjectOutputStream(outToClient);
@@ -36,7 +36,7 @@ public class ServerStrategyGenerateMaze implements IServerStrategy {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
 
         }

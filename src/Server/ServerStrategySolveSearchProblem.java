@@ -10,7 +10,7 @@ import test.RunSearchOnMaze;
 import java.io.*;
 
 public class ServerStrategySolveSearchProblem implements IServerStrategy {
-    public void applyStrategy(InputStream inFromClient, OutputStream outToClient) throws IOException, ClassNotFoundException {
+    public void applyStrategy(InputStream inFromClient, OutputStream outToClient) throws IOException {
         try {
             ObjectInputStream fromClient = new ObjectInputStream(inFromClient);
             ObjectOutputStream toClient = new ObjectOutputStream(outToClient);
@@ -20,9 +20,8 @@ public class ServerStrategySolveSearchProblem implements IServerStrategy {
             BestFirstSearch bfs = new BestFirstSearch();
             Solution solution = bfs.solve(searchableMaze);
             toClient.writeObject(solution);
-
-
-
-
-
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
+    }
+}
