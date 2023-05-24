@@ -64,9 +64,7 @@ public class Server {
         }
     }
     String tempDirectoryPath = System.getProperty("java.io.tmpdir");
-    private Solution alreadyExist(Maze maze ){
 
-    }
 }
 
 
