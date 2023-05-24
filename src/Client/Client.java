@@ -29,10 +29,8 @@ public class Client {
 
             clientStrategy.clientStrategy(fromServer, toServer); // Call the client strategy to perform communication
 
-            //String s = fromServer.readLine();
-            //System.out.println("Server: " + s);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
 
         }
     }

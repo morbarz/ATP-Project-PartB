@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,28 +27,31 @@ public class Server {
         pool = Executors.newFixedThreadPool(maxClients);
     }
 
-    public void startServer() throws IOException {
-        ServerSocket serverSocket = new ServerSocket(port);
-        serverSocket.setSoTimeout(mili);
-        System.out.println("Server Booted");
-        System.out.println("Any client can stop the server by sending -1");
+    public void startServer()  {
+        try {
+            ServerSocket serverSocket = new ServerSocket(port);
+            serverSocket.setSoTimeout(mili);
+            System.out.println("Server Booted");
+            System.out.println("Any client can stop the server by sending -1");
 
-        while (!stop) {
-            Socket clientSocket = serverSocket.accept();
-            pool.execute(() -> handleClient(clientSocket));
+            while (!stop) {
+                try {
+                    //start();
+                    Socket clientSocket = serverSocket.accept();
+                    pool.execute(() -> handleClient(clientSocket));
+                } catch (SocketTimeoutException e) {
+                    System.out.println("Accept timed out");
+                }
+            }
+
+            serverSocket.close();
+            pool.shutdownNow();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        serverSocket.close();
-        pool.shutdown();
     }
     public void start(){
-        new Thread(() -> {
-            try {
-                startServer();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
-
+        new Thread(() -> startServer()).start();
     }
     public void stop(){
         stop = true;

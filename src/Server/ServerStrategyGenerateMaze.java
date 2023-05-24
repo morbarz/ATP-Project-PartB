@@ -16,23 +16,21 @@ public class ServerStrategyGenerateMaze implements IServerStrategy {
 
             int[] al;
             al = (int[]) fromClient.readObject(); // read int[number of rows , number of columns ]
-            //toClient.writeObject(al);
-            //toClient.flush();
-            //romClient.close();
-            //toClient.close();
-            // catch (Exception e) {
-            //  e.printStackTrace();
-            //}
+
             String mazeFileName = "savedMaze.maze";
             AMazeGenerator mazeGenerator = new MyMazeGenerator();
             Maze maze = mazeGenerator.generate(al[1], al[2]); //Generate new maze
             //byte[] byte_array = maze.toByteArray();
             try {
 // save maze to a file
-                //toClient = new ObjectOutputStream(new FileOutputStream(mazeFileName));
-                toClient.write(maze.toByteArray()); // check if it compressed ********
+                ByteArrayOutputStream b_out = new ByteArrayOutputStream();
+                OutputStream compress = new MyCompressorOutputStream(b_out);
+                byte[] Compressed_maze = maze.toByteArray();
+                toClient.write(Compressed_maze); // check if it compressed ********
+                toClient.writeObject(b_out.toByteArray());
                 toClient.flush();
                 toClient.close();
+                fromClient.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
