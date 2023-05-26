@@ -1,3 +1,4 @@
+
 package Server;
 
 import algorithms.mazeGenerators.Maze;
