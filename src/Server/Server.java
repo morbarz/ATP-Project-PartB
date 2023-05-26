@@ -40,7 +40,7 @@ public class Server {
                     Socket clientSocket = serverSocket.accept();
                     pool.execute(() -> handleClient(clientSocket));
                 } catch (SocketTimeoutException e) {
-                    System.out.println("Accept timed out");
+                    //System.out.println("Accept timed out");
                 }
             }
 
