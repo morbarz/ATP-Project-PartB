@@ -1,27 +1,30 @@
 package Server;
 
 import IO.MyCompressorOutputStream;
-import algorithms.mazeGenerators.AMazeGenerator;
-import algorithms.mazeGenerators.Maze;
-import algorithms.mazeGenerators.MyMazeGenerator;
+import algorithms.mazeGenerators.*;
 
 import java.io.*;
 import java.util.ArrayList;
 
 public class ServerStrategyGenerateMaze implements IServerStrategy {
-    public void applyStrategy(InputStream inFromClient, OutputStream outToClient) throws IOException{
+    @Override
+    public void applyStrategy(InputStream inFromClient, OutputStream outToClient) {
         try {
             ObjectInputStream fromClient = new ObjectInputStream(inFromClient);
             ObjectOutputStream toClient = new ObjectOutputStream(outToClient);
+            AMazeGenerator MazeGen;
+            switch (Configurations.createInstance().readConfig().getProperty("mazeGeneratingAlgorithm")) {
+                case "My" -> MazeGen = new MyMazeGenerator();
+                case "Simple" -> MazeGen = new SimpleMazeGenerator();
+                case "Empty" -> MazeGen = new EmptyMazeGenerator();
+                default -> MazeGen = null;
+            }
+            //int[] al;
+            int[] al; // read int[number of rows , number of columns ]
+            al = (int[]) fromClient.readObject();
+            assert MazeGen != null;
+            Maze maze = MazeGen.generate(al[0], al[1]); //Generate new maze
 
-            int[] al;
-            al = (int[]) fromClient.readObject(); // read int[number of rows , number of columns ]
-
-            String mazeFileName = "savedMaze.maze";
-            AMazeGenerator mazeGenerator = new MyMazeGenerator();
-            Maze maze = mazeGenerator.generate(al[1], al[2]); //Generate new maze
-            //byte[] byte_array = maze.toByteArray();
-            try {
 // save maze to a file
                 ByteArrayOutputStream b_out = new ByteArrayOutputStream();
                 OutputStream compress = new MyCompressorOutputStream(b_out);
@@ -31,12 +34,10 @@ public class ServerStrategyGenerateMaze implements IServerStrategy {
                 toClient.flush();
                 toClient.close();
                 fromClient.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+
 
         }
     }
-}

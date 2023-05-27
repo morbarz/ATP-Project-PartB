@@ -1,9 +1,10 @@
 package algorithms.search;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Solution
+public class Solution implements Serializable
 {
     protected ArrayList<AState> states;
     protected ArrayList<AState> reversed;

@@ -8,7 +8,6 @@ import java.util.Arrays;
 public class MyCompressorOutputStream extends OutputStream
 {
     public OutputStream out;
-    public ArrayList<Integer> array = new ArrayList<>();
     public byte[] ByteArray;
     public int size = 0;
 
@@ -17,12 +16,15 @@ public class MyCompressorOutputStream extends OutputStream
         this.out = outputStream;
     }
 
-    public void write(int b) throws IOException
-    {}
-    public void write(byte[] b) throws IOException {
-        out.write(compress(b));
+    public void write(int b) throws IOException {
+        out.write((byte)b);
     }
-    public byte[] compress(byte[] b ) throws IOException {
+    @Override
+    public void write(byte[] b) throws IOException {
+        compress(b);
+       // out.write(compress(b));
+    }
+    public void compress(byte[] b ) throws IOException {
 
         // inserting start/end/size of maze and initialize byte array.
         if ((b.length-12) % 8 == 0)
@@ -69,8 +71,8 @@ public class MyCompressorOutputStream extends OutputStream
                 size++;
             }
         }
-        return ByteArray;
-        ///TODO gets a byte array need to check each byte if comes in blocks and count it.
+        //return ByteArray;
+        out.write(ByteArray);
     }
 
         // convert binary into int.

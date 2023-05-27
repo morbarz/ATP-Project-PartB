@@ -56,13 +56,14 @@ public class RunCommunicateWithServers {
                         is.read(decompressedMaze); // Fill decompressedMaze with bytes
                         Maze maze = new Maze(decompressedMaze);
                         maze.print();
-                    } catch (Exception e){
-                        e.printStackTrace(); }
+                    } catch (Exception e) {
+                        //e.printStackTrace(); }
+                    }
                 }
             });
             client.communicateWithServer();
         } catch (UnknownHostException e){
-            e.printStackTrace();
+           // e.printStackTrace();
         }
     }
 
@@ -88,13 +89,13 @@ public class RunCommunicateWithServers {
                             System.out.println(String.format("%s. %s", i, mazeSolutionSteps.get(i).toString()));
                         }
                     } catch (Exception e){
-                        e.printStackTrace();
+                       // e.printStackTrace();
                     }
                 }
             });
             client.communicateWithServer();
         } catch (UnknownHostException e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
     private static void CommunicateWithServer_StringReverser() {
@@ -116,13 +117,13 @@ public class RunCommunicateWithServers {
                                 fromServer.close();
                                 toServer.close();
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                //e.printStackTrace();
                             }
                         }
             });
             client.communicateWithServer();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+           // e.printStackTrace();
         }
     }
 }

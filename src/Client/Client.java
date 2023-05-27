@@ -3,9 +3,7 @@ package Client;
 
 import java.io.*;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class Client {
     private int port;
@@ -20,18 +18,11 @@ public class Client {
 
     public void communicateWithServer() {
         try {
-
             Socket socket = new Socket(ip, port); //Create a socket using ip,port parameters
-
-            ObjectOutputStream toServer = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream fromServer = new ObjectInputStream(socket.getInputStream());
-            BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-
-            clientStrategy.clientStrategy(fromServer, toServer); // Call the client strategy to perform communication
-
+            System.out.println("connected to server - IP = " + ip + ", Port = " + port);
+            clientStrategy.clientStrategy(socket.getInputStream(), socket.getOutputStream()); // Call the client strategy to perform communication
         } catch (IOException e) {
-            //e.printStackTrace();
-
+            e.printStackTrace();
         }
     }
 }

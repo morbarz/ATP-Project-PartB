@@ -1,41 +1,129 @@
+
+
 package IO;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
-public class SimpleDecompressorInputStream extends InputStream {
-    private InputStream in;
-    private ArrayList<Byte> originalByteArray = new ArrayList<>();
-    private int currentIndex = 0;
+public class SimpleDecompressorInputStream extends InputStream
+{
+    public InputStream in;
+    public ArrayList<Integer> array = new ArrayList<>();
+    public byte[] tempArr = new byte[2];
+    public byte[] ByteArray;
+    public int size = 0;
 
-    public SimpleDecompressorInputStream(InputStream in) {
-        this.in = in;
+    public SimpleDecompressorInputStream(InputStream inputStream)
+    {
+        this.in = inputStream;
     }
-
     @Override
-    public int read() throws IOException {
-        if (currentIndex < originalByteArray.size()) {
-            return originalByteArray.get(currentIndex++);
-        }
-        return -1; // End of stream
-    }
+    public int read() throws IOException {return 0;}
 
-    public void read(Byte[] b) throws IOException {
-        for (int i = 0; i < 12; i++) { // Read the metadata (start position, goal position, size)
-            originalByteArray.add(b[i]);
+    public int read(byte[] bytes) throws IOException
+    {
+        // init
+        ByteArray = new byte[bytes.length];
+        byte[] readBytes = in.readAllBytes();
+        boolean flag = false;
+        int zero = 0, one = 0;
+
+        // convert directly the size+start+end into our result.
+        for (int i = 0; i < 12; i++)
+        {
+            ByteArray[size++] = readBytes[i];
         }
 
-        for (int j = 12; j < b.length; j++) {
-            if (j % 2 == 0) { // Even position in the array
-                for (int k = 0; k < b[j]; k++) {
-                    originalByteArray.add((byte) 0);
+        // getting all bytes[2] in tuples of 2 converting into ints.
+        if (readBytes[12] == 1)
+        {
+            flag = true;
+        }
+        byte[] t = new byte[2];
+        t[0] = bytes[4];
+        t[1] = bytes[5];
+        int checkSize = BytesTooInt(t);
+        if (checkSize <= 500)
+            readBytes[12] = 0;
+
+        for (int b = 12; b < readBytes.length; b+=2)
+        {
+            if (b == readBytes.length - 1)
+            {
+                tempArr[0] = 0;
+                tempArr[1] = readBytes[b];
+                int val = BytesTooInt(tempArr);
+                if (!flag)
+                {
+                    for (int i = 0; i < val; i++)
+                    {
+                        ByteArray[size++] = (byte)0;
+                    }
                 }
-            } else { // Odd position in the array
-                for (int k = 0; k < b[j]; k++) {
-                    originalByteArray.add((byte) 1);
+                if (flag)
+                {
+                    for (int i = 0; i < val; i++)
+                    {
+                        ByteArray[size++] = (byte)1;
+                    }
+                }
+                flag = !flag;
+                break;
+            }
+            else{
+                tempArr[0] = readBytes[b];
+                tempArr[1] = readBytes[b+1];
+            }
+
+            int val = BytesTooInt(tempArr);
+            if (!flag)
+            {
+                for (int i = 0; i < val; i++)
+                {
+                    if (size == bytes.length)
+                        continue;
+                    ByteArray[size++] = (byte)0;
                 }
             }
+            if (flag)
+            {
+                for (int i = 0; i < val; i++)
+                {
+                    if (size == bytes.length)
+                        continue;
+                    ByteArray[size++] = (byte)1;
+                }
+            }
+            flag = !flag;
         }
+        for (int i = 0; i < ByteArray.length; i++)
+        {
+            bytes[i] = ByteArray[i];
+        }
+
+        ///TODO gets an array of numbers and need to break to atoms. [0,7,10,16] -> [0000000,1111111111, 00....]
+        return 0;
     }
+
+    // convert int into byte[2].
+    public byte[] IntTooBytes(int value)
+    {
+        byte[] bytes = new byte[2];
+        int length = bytes.length;
+        for (int i = 0; i < length; i++) {
+            bytes[length - i - 1] = (byte) (value & 0xFF);
+            value >>= 8;
+        }
+        return bytes;
+    }
+
+    //converts bytes into int.
+    public int BytesTooInt(byte[] bytes)
+    {
+        int v = new BigInteger(bytes).intValue();
+        return v;
+    }
+
 }
