@@ -29,12 +29,12 @@ public class ServerStrategySolveSearchProblem implements IServerStrategy{
                 default -> Algo = null;
             };
             assert Algo != null;
-            boolean found_flag = false;
+            boolean flag = false;
             Maze inputMaze = (Maze) fromClient.readObject();
             int hashKey = inputMaze.hashCode();
             int specifier = 0;
 
-            //Code line from project work sheet to get the Solution files from the temporary directory
+            // get the Solution files from the temporary directory
             String tempDirectoryPath = System.getProperty("java.io.tmpdir");
             File temp_directory = new File(tempDirectoryPath);
 
@@ -42,11 +42,11 @@ public class ServerStrategySolveSearchProblem implements IServerStrategy{
             byte[] Other_maze;
             Solution Other_solution = null;
 
-            //Defining InputStreams in order to search each file in temp directory
+
             FileInputStream file_in_stream;
             ObjectInputStream object_in_stream;
 
-            //Output streams
+
             FileOutputStream file_out_stream;
             ObjectOutputStream object_out_stream;
 
@@ -64,15 +64,15 @@ public class ServerStrategySolveSearchProblem implements IServerStrategy{
                                 Other_maze = (byte[]) other_objects[0];
                                 Other_solution = (Solution) other_objects[1];
                             } catch (Exception e){
-                                // if we catch exception that means that it probably wasn't a file, so moving on to the next one.
+
                                 continue;
                             }
                             /*if we got here that means that we found solution file and need to check it by 3
                             parameters - hashKey, length, and Maze comparison*/
-                            found_flag = (curr.hashCode() == hashKey) && (Arrays.equals(Other_maze, inputMaze.toByteArray()))
+                            flag = (curr.hashCode() == hashKey) && (Arrays.equals(Other_maze, inputMaze.toByteArray()))
                                     && (inputMaze.toByteArray().length == Other_maze.length);
-                            if (!found_flag) {
-                                //In order to make each file unique we use specifier, if they got the same hashKey.
+                            if (!flag) {
+
                                 specifier++;
                                 break;
                             }
@@ -89,7 +89,7 @@ public class ServerStrategySolveSearchProblem implements IServerStrategy{
                 }
             }
 
-            if(!found_flag) {
+            if(!flag) {
                 //Creating new solution and sending it back to client
                 SearchableMaze search_problem = new SearchableMaze(inputMaze);
                 Solution Sol = Algo.solve(search_problem);
@@ -111,7 +111,7 @@ public class ServerStrategySolveSearchProblem implements IServerStrategy{
                 object_out_stream.close();
             }
 
-            //closing connection
+
             toClient.close();
             fromClient.close();
         }catch(Exception e){

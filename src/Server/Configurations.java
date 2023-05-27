@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Properties;
 
 public class Configurations {
-    private static Configurations properties_file = null;
+    private static Configurations prop_file = null;
     private Properties properties;
     private InputStream inStream;
     private OutputStream outStream;
@@ -14,13 +14,13 @@ public class Configurations {
     private Configurations(){}
 
     public static Configurations createInstance(){
-        if (properties_file != null){
+        if (prop_file != null){
             System.out.println("Properties File already exist");
         }
         else {
-            properties_file = new Configurations();
+            prop_file = new Configurations();
         }
-        return properties_file;
+        return prop_file;
     }
 
 

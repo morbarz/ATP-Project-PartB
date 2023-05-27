@@ -11,15 +11,15 @@ import algorithms.search.Solution;
 
 public class Server {
     private int port;
-    private int listeningIntervalMS;
+    private int listening_Interval_MS;
     private IServerStrategy strategy;
     private boolean stop;
     private ExecutorService ThreadPool;
 
-    //Server builder
+
     public Server(int port, int listeningIntervalMS, IServerStrategy strategy) {
         this.port = port;
-        this.listeningIntervalMS = listeningIntervalMS;
+        this.listening_Interval_MS = listeningIntervalMS;
         this.strategy = strategy;
         ThreadPool = Executors.newFixedThreadPool(Integer.parseInt(Configurations.createInstance().readConfig().getProperty("threadPoolSize")));
     }
@@ -27,13 +27,13 @@ public class Server {
     public void startME(){
         try {
             ServerSocket serverSocket = new ServerSocket(port);
-            serverSocket.setSoTimeout(listeningIntervalMS);
+            serverSocket.setSoTimeout(listening_Interval_MS);
             while (!stop) {
                 try {
                     Socket clientSocket = serverSocket.accept();
                     System.out.println("Client accepted: " + clientSocket.toString());
 
-                    // This thread will handle the new Client
+                    //  handle the new Client
                     ThreadPool.execute(()->handleClient(clientSocket));
 
                 } catch (SocketTimeoutException e){

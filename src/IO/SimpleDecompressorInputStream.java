@@ -23,13 +23,13 @@ public class SimpleDecompressorInputStream extends InputStream
 
     public int read(byte[] bytes) throws IOException
     {
-        // init
+
         ByteArray = new byte[bytes.length];
         byte[] readBytes = in.readAllBytes();
         boolean flag = false;
-        int zero = 0, one = 0;
 
-        // convert directly the size+start+end into our result.
+
+        //  // Convert the size, start, end
         for (int i = 0; i < 12; i++)
         {
             ByteArray[size++] = readBytes[i];
@@ -102,7 +102,7 @@ public class SimpleDecompressorInputStream extends InputStream
             bytes[i] = ByteArray[i];
         }
 
-        ///TODO gets an array of numbers and need to break to atoms. [0,7,10,16] -> [0000000,1111111111, 00....]
+        /// gets an array of numbers and need to break to atoms
         return 0;
     }
 
@@ -111,8 +111,8 @@ public class SimpleDecompressorInputStream extends InputStream
     //converts bytes into int.
     public int BytesTooInt(byte[] bytes)
     {
-        int v = new BigInteger(bytes).intValue();
-        return v;
+        int temp = new BigInteger(bytes).intValue();
+        return temp;
     }
 
 }

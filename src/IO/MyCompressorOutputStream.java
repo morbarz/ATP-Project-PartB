@@ -63,10 +63,10 @@ public class MyCompressorOutputStream extends OutputStream
                 }
             }
             out.write(ByteArray);
-            ///TODO gets a byte array need to check each byte if comes in blocks and count it.
+
         }
     }
-    // convert binary into int.
+    // Take binary and turn into Int
     public int BinaryToInt(char[] bin)
     {
         int level = 0;
@@ -82,7 +82,7 @@ public class MyCompressorOutputStream extends OutputStream
         return (int) result;
     }
 
-    // convert int into byte array.
+    // Take int and turn into binary
     public byte[] IntTooBytes(int value)
     {
         byte[] bytes = new byte[2];
