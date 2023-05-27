@@ -10,7 +10,6 @@ import java.util.ArrayList;
 public class SimpleDecompressorInputStream extends InputStream
 {
     public InputStream in;
-    public ArrayList<Integer> array = new ArrayList<>();
     public byte[] tempArr = new byte[2];
     public byte[] ByteArray;
     public int size = 0;
@@ -107,17 +106,7 @@ public class SimpleDecompressorInputStream extends InputStream
         return 0;
     }
 
-    // convert int into byte[2].
-    public byte[] IntTooBytes(int value)
-    {
-        byte[] bytes = new byte[2];
-        int length = bytes.length;
-        for (int i = 0; i < length; i++) {
-            bytes[length - i - 1] = (byte) (value & 0xFF);
-            value >>= 8;
-        }
-        return bytes;
-    }
+
 
     //converts bytes into int.
     public int BytesTooInt(byte[] bytes)

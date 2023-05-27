@@ -16,67 +16,57 @@ public class MyCompressorOutputStream extends OutputStream
         this.out = outputStream;
     }
 
-    public void write(int b) throws IOException {
-        out.write((byte)b);
-    }
-    @Override
-    public void write(byte[] b) throws IOException {
-        compress(b);
-       // out.write(compress(b));
+    public void write(int b) throws IOException
+    {}
+    public void write(byte[] b) throws IOException{
+    compress(b);
     }
     public void compress(byte[] b ) throws IOException {
-
-        // inserting start/end/size of maze and initialize byte array.
-        if ((b.length-12) % 8 == 0)
-            ByteArray = new byte[(int)Math.ceil((double)(b.length-12)/4) + 12];
-        else {
-            ByteArray = new byte[(b.length - 12) / 4 + 14];
-        }
-        for (int i = 0; i < 12; i++)
         {
-            ByteArray[i] = b[i];
-            size++;
-        }
-        int count = 0;
-        char[] binary = new char[8];
-        for (int i = 12; i < b.length; i++)
-        {
-            if ((int)b[i] == 0)
-                binary[count++] = '0';
-            else
-                binary[count++] = '1';
-
-            if (count == 8)
-            {
-                int val = BinaryToInt(binary);
-                byte[] res = IntTooBytes(val);
-                ByteArray[size] = res[0];
-                size++;
-                ByteArray[size] = res[1];
-                size++;
-                count = 0;
+            // inserting start/end/size of maze and initialize byte array.
+            if ((b.length - 12) % 8 == 0)
+                ByteArray = new byte[(int) Math.ceil((double) (b.length - 12) / 4) + 12];
+            else {
+                ByteArray = new byte[(b.length - 12) / 4 + 14];
             }
-            else if (i == b.length - 1)
-            {
-                int add = 8 - ((b.length - 12) % 8);
-                for (int j = 0; j < add; j++)
-                {
+            for (int i = 0; i < 12; i++) {
+                ByteArray[i] = b[i];
+                size++;
+            }
+            int count = 0;
+            char[] binary = new char[8];
+            for (int i = 12; i < b.length; i++) {
+                if ((int) b[i] == 0)
                     binary[count++] = '0';
+                else
+                    binary[count++] = '1';
+
+                if (count == 8) {
+                    int val = BinaryToInt(binary);
+                    byte[] res = IntTooBytes(val);
+                    ByteArray[size] = res[0];
+                    size++;
+                    ByteArray[size] = res[1];
+                    size++;
+                    count = 0;
+                } else if (i == b.length - 1) {
+                    int add = 8 - ((b.length - 12) % 8);
+                    for (int j = 0; j < add; j++) {
+                        binary[count++] = '0';
+                    }
+                    int val = BinaryToInt(binary);
+                    byte[] res = IntTooBytes(val);
+                    ByteArray[size] = res[0];
+                    size++;
+                    ByteArray[size] = res[1];
+                    size++;
                 }
-                int val = BinaryToInt(binary);
-                byte[] res = IntTooBytes(val);
-                ByteArray[size] = res[0];
-                size++;
-                ByteArray[size] = res[1];
-                size++;
             }
+            out.write(ByteArray);
+            ///TODO gets a byte array need to check each byte if comes in blocks and count it.
         }
-        //return ByteArray;
-        out.write(ByteArray);
     }
-
-        // convert binary into int.
-
+    // convert binary into int.
     public int BinaryToInt(char[] bin)
     {
         int level = 0;

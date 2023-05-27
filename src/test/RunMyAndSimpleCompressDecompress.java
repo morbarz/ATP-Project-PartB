@@ -115,9 +115,4 @@ public class RunMyAndSimpleCompressDecompress {
 
     }
 
-//                System.out.println("#### before compress ####");
-//                for (int i = 0; i < mazeByte.length; i++) {
-//                    System.out.print(mazeByte[i] + ",");
-//                }
-//                System.out.println();
 }

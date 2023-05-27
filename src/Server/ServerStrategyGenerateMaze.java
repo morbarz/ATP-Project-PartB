@@ -27,9 +27,6 @@ public class ServerStrategyGenerateMaze implements IServerStrategy {
 
 // save maze to a file
                 ByteArrayOutputStream b_out = new ByteArrayOutputStream();
-                OutputStream compress = new MyCompressorOutputStream(b_out);
-                byte[] Compressed_maze = maze.toByteArray();
-                toClient.write(Compressed_maze); // check if it compressed ********
                 toClient.writeObject(b_out.toByteArray());
                 toClient.flush();
                 toClient.close();
