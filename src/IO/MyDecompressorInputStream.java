@@ -13,21 +13,16 @@ public class MyDecompressorInputStream extends InputStream {
     {
         this.in = inputStream;
     }
-
     @Override
     public int read() throws IOException {
-
         return 0;
     }
 
     public int read(byte[] bytes) throws IOException {
         decompress(bytes);
         return 0;
-
     }
-    // converts from int into a list of ints(binary values) 100 -> [1,1,0,0,1,0,0]
-    public byte[] decompress(byte[] bytes ) throws IOException {
-        readBytes = new byte[bytes.length];
+    public void decompress(byte[] bytes ) throws IOException {        readBytes = new byte[bytes.length];
         readBytes = in.readAllBytes();
         int count = 12;
         // converting the start/end/size of the maze.
@@ -90,11 +85,10 @@ public class MyDecompressorInputStream extends InputStream {
             }
         }
         /// TODO convert all bytes into 1's & 0's.
-        return bytes;
-
     }
 
-        public int[] IntToBinary(int val)
+
+    public int[] IntToBinary(int val)
     {
         String str = Integer.toBinaryString(val);
         int[] arr = new int[8];
@@ -116,4 +110,3 @@ public class MyDecompressorInputStream extends InputStream {
     }
 
 }
-

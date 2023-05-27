@@ -1,75 +1,69 @@
 package Server;
 
-import algorithms.mazeGenerators.Maze;
-import algorithms.search.Solution;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import Server.IServerStrategy;
+import algorithms.search.Solution;
 
 public class Server {
     private int port;
-    private int mili;
-    private IServerStrategy serverStrategy;
-    private ExecutorService pool;
+    private int listeningIntervalMS;
+    private IServerStrategy strategy;
     private boolean stop;
+    private ExecutorService ThreadPool;
 
-    public Server(int port, int maxClients, IServerStrategy serverStrategy) {
+    //Server builder
+    public Server(int port, int listeningIntervalMS, IServerStrategy strategy) {
         this.port = port;
-        this.mili = maxClients;
-        this.serverStrategy = serverStrategy;
-        pool = Executors.newFixedThreadPool(maxClients);
+        this.listeningIntervalMS = listeningIntervalMS;
+        this.strategy = strategy;
+        ThreadPool = Executors.newFixedThreadPool(Integer.parseInt(Configurations.createInstance().readConfig().getProperty("threadPoolSize")));
     }
 
-    public void startServer()  {
+    public void startME(){
         try {
             ServerSocket serverSocket = new ServerSocket(port);
-            serverSocket.setSoTimeout(mili);
-            System.out.println("Server Booted");
-            System.out.println("Any client can stop the server by sending -1");
-
+            serverSocket.setSoTimeout(listeningIntervalMS);
             while (!stop) {
                 try {
-                    //start();
                     Socket clientSocket = serverSocket.accept();
-                    pool.execute(() -> handleClient(clientSocket));
-                } catch (SocketTimeoutException e) {
-                    //System.out.println("Accept timed out");
+                    System.out.println("Client accepted: " + clientSocket.toString());
+
+                    // This thread will handle the new Client
+                    ThreadPool.execute(()->handleClient(clientSocket));
+
+                } catch (SocketTimeoutException e){
                 }
             }
-
             serverSocket.close();
-            pool.shutdownNow();
+            ThreadPool.shutdownNow();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    public void start(){
-        new Thread(() -> startServer()).start();
-    }
-    public void stop(){
-        stop = true;
-    }
 
+    public void start(){
+        new Thread(() -> startME()).start();
+
+    }
 
 
     private void handleClient(Socket clientSocket) {
         try {
-            serverStrategy.applyStrategy(clientSocket.getInputStream(), clientSocket.getOutputStream());
+            strategy.applyStrategy(clientSocket.getInputStream(), clientSocket.getOutputStream());
+            System.out.println("Done handling client: " + clientSocket.toString());
             clientSocket.close();
         } catch (IOException e){
             e.printStackTrace();
         }
     }
-    String tempDirectoryPath = System.getProperty("java.io.tmpdir");
 
+    public void stop(){
+        System.out.println("Stopping server...");
+        stop = true;
+    }
 }
-
-
-

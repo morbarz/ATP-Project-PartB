@@ -1,11 +1,14 @@
 package algorithms.mazeGenerators;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Random;
 
-public class Maze {
+public class Maze implements Serializable {
     // constructor creates an empty maze[][] & initialize 0's
     public int[][] maze;
+    public byte[] ByteArray;
+
     public Position startPosition;
     public Position goalPosition;
     public int row;
@@ -85,7 +88,7 @@ public class Maze {
         int end_row = this.goalPosition.getRowIndex();
         int  end_col = this.goalPosition.getColumnIndex();
 
-        this.bytearr = new byte[12+ this.row*this.col];
+        this.ByteArray = new byte[12+ this.row*this.col];
 //        byte[] finalBytes = new byte[12 + this.row*this.col];
         byte[] b1 = IntTooBytes(start_row);
         byte[] b2 = IntTooBytes(start_col);
@@ -96,24 +99,23 @@ public class Maze {
 
         for (int i = 0; i < 2; i++)
         {
-            bytearr[i] = b1[i];
-            bytearr[i+2] = b2[i];
-            bytearr[i+4] = b3[i];
-            bytearr[i+6] = b4[i];
-            bytearr[i+8] = b5[i];
-            bytearr[i+10] = b6[i];
+            ByteArray[i] = b1[i];
+            ByteArray[i+2] = b2[i];
+            ByteArray[i+4] = b3[i];
+            ByteArray[i+6] = b4[i];
+            ByteArray[i+8] = b5[i];
+            ByteArray[i+10] = b6[i];
         }
         int counter = 12;
         for (int i = 0; i < row; i++)
         {
             for (int j = 0; j < col; j++)
             {
-                bytearr[counter++] = (byte)this.maze[i][j];
+                ByteArray[counter++] = (byte)this.maze[i][j];
             }
         }
-        return bytearr;
+        return ByteArray;
     }
-
     public Maze(byte[] bytes)
     {
         byte[] b1 = new byte[2];
